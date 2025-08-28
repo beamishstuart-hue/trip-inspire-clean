@@ -1,9 +1,15 @@
 // app/api/inspire/route.ts
 export const runtime = 'nodejs';
 export const maxDuration = 60;
+// Ensure this endpoint is always dynamic (no static caching)
+export const dynamic = 'force-dynamic';
 
-export async function POST() {
-  return new Response(JSON.stringify({
+type DayPlan = { morning: string; afternoon: string; evening: string };
+type Trip = { city: string; country?: string; summary?: string; days: DayPlan[] };
+type InspireResponse = { top3: Trip[] };
+
+function sample(): InspireResponse {
+  return {
     top3: [
       {
         city: "Lisbon",
@@ -17,5 +23,20 @@ export async function POST() {
         ]
       }
     ]
-  }), { status: 200, headers: { "Content-Type": "application/json" }});
+  };
+}
+
+export async function GET() {
+  return new Response(JSON.stringify(sample()), {
+    status: 200,
+    headers: { "Content-Type": "application/json" }
+  });
+}
+
+export async function POST(_req: Request) {
+  // We ignore the body for now; just return the sample
+  return new Response(JSON.stringify(sample()), {
+    status: 200,
+    headers: { "Content-Type": "application/json" }
+  });
 }
